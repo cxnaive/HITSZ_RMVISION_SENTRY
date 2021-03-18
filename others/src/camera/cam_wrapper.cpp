@@ -10,8 +10,6 @@
 
 //#include <opencv2/opencv.hpp>
 
-std::mutex mtx;
-
 void ProcessData(void *pImageBuf, void *pImageRaw8Buf, void *pImageRGBBuf,
                  int nImageWidth, int nImageHeight, int nPixelFormat,
                  int nPixelColorFilter) {
@@ -105,9 +103,9 @@ void GX_STDC OnFrameCallbackFun(GX_FRAME_CALLBACK_PARAM *pFrame) {
         // std::swap(channels[0], channels[2]);
         cv::swap(channels[0], channels[2]);
         merge(channels, temp);
-        mtx.lock();
+        cam->mtx.lock();
         temp.copyTo(cam->p_img);
-        mtx.unlock();
+        cam->mtx.unlock();
     }
     return;
 }
@@ -135,9 +133,9 @@ void getRGBImage(Camera *p_cam) {
         // std::swap(channels[0], channels[2]);
         cv::swap(channels[0], channels[2]);
         merge(channels, temp);
-        mtx.lock();
+        p_cam->mtx.lock();
         temp.copyTo(p_cam->p_img);
-        mtx.unlock();
+        p_cam->mtx.unlock();
     }
 }
 

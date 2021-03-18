@@ -45,24 +45,27 @@ std::map<std::string, int> prior_red = {
     {"R7", 3},  {"R2", 4}, {"B8", 5}, {"B1", 6}, {"B3", 7},
     {"B4", 7},  {"B5", 7}, {"B7", 8}, {"B2", 9}};
 
-ArmorFinder::ArmorFinder(const int &color, RmSerial &u, const int &anti_top)
-    : serial(u),
-      enemy_color(color),
-      is_anti_top(anti_top),   //反陀螺
-      state(SEARCHING_STATE),  //默认为searching模式
-      netDetector(),           // YOLOV5 多目标识别
-      anti_switch_cnt(0),      // 防止乱切目标计数器
-      YawPID(config.ARMOR_YAW_KP, config.ARMOR_YAW_KI,
-             config.ARMOR_YAW_KD),  // YAW轴PID控制
-      PitchPID(config.ARMOR_PITCH_KP, config.ARMOR_PITCH_KI,
-               config.ARMOR_PITCH_KD),  // PITCH轴PID控制
+ArmorFinder::ArmorFinder(RmRunTime *_runtime, RmSerial *_serial)
+    : runtime(_runtime),
+      serial(_serial),
+      config(_runtime->config),
+      enemy_color(_runtime->config->ENEMY_COLOR),
+      is_anti_top(_runtime->config->ANTI_TOP),  //反陀螺
+      state(SEARCHING_STATE),                   //默认为searching模式
+      netDetector(),                            // YOLOV5 多目标识别
+      anti_switch_cnt(0),                       // 防止乱切目标计数器
+      YawPID(_runtime->config->ARMOR_YAW_KP, _runtime->config->ARMOR_YAW_KI,
+             _runtime->config->ARMOR_YAW_KD),  // YAW轴PID控制
+      PitchPID(_runtime->config->ARMOR_PITCH_KP,
+               _runtime->config->ARMOR_PITCH_KI,
+               _runtime->config->ARMOR_PITCH_KD),  // PITCH轴PID控制
       contour_area(
           0),  //装甲区域亮点个数，用于数字识别未启用时判断是否跟丢（已弃用）
       tracking_cnt(0) {  // 记录追踪帧数，用于定时退出追踪
 }
 std::vector<ArmorInfo> ArmorFinder::filterArmorInfoByColor(
     const std::vector<ArmorInfo> &armors, const cv::Mat &src) {
-    if (config.show_net_box) {
+    if (config->show_net_box) {
         showNetBoxes("net boxes", src, armors);
     }
     std::vector<ArmorInfo> res;
@@ -120,8 +123,8 @@ void ArmorFinder::run(cv::Mat &src) {    // 自瞄主函数
         last_box = target_box;
     }
 
-    if (config.show_armor_box &&
+    if (config->show_armor_box &&
         target_box.rect != cv::Rect2d()) {  // 根据条件显示当前目标装甲板
-        showArmorBox("box", src, target_box);
+        showArmorBox("box", src, target_box, runtime);
     }
 }

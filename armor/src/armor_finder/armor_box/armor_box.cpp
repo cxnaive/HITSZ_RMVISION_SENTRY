@@ -1,11 +1,13 @@
 
 #include <armor_finder/armor_finder.h>
+#include <armor_finder/armor_box.h>
 #include <runtime.h>
 
-ArmorBox::ArmorBox(const cv::Rect &pos, const LightBlobs &blobs, uint8_t color,
-                   int i)
-    : rect(pos), light_blobs(blobs), box_color(color), id(i){};
-std::pair<cv::Point3d, cv::Point3d> ArmorBox::armorSolvePnP() const {
+ArmorBox::ArmorBox(const cv::Rect &pos,
+                   const LightBlobs &blobs, uint8_t color, int i)
+    :rect(pos), light_blobs(blobs), box_color(color), id(i){};
+std::pair<cv::Point3d, cv::Point3d> ArmorBox::armorSolvePnP(RmRunTime* runtime) const {
+    RmConfig &config = *runtime->config;
     static double x = config.ARMOR_W / 2.0;
     static double y = config.ARMOR_H / 2.0;
     //装甲板世界坐标，从右下开始逆时针 4 点。
@@ -41,7 +43,7 @@ std::pair<cv::Point3d, cv::Point3d> ArmorBox::armorSolvePnP() const {
         std::vector<cv::Point2f> refer_image_points;
         cv::projectPoints(refer_world_points, Rvec, Tvec, config.camConfig.mtx,
                           config.camConfig.dist, refer_image_points);
-        cv::Mat pnp = src.clone();
+        cv::Mat pnp = runtime->src.clone();
         cv::line(pnp, refer_image_points[0], refer_image_points[1],
                  cv::Scalar(0, 0, 255), 2);
         cv::line(pnp, refer_image_points[0], refer_image_points[2],
@@ -118,34 +120,34 @@ double ArmorBox::lengthDistanceRatio() const {
 }
 
 // 计算装甲板到摄像头的距离
-double ArmorBox::getBoxDistance() const {
-    if (config.use_pnp) {
-        auto ans = armorSolvePnP();
+double ArmorBox::getBoxDistance(RmRunTime* runtime) const {
+    if (runtime->config->use_pnp) {
+        auto ans = armorSolvePnP(runtime);
         return ans.second.z;
     } else {
         auto points = getArmorPoints();
         double x = getPointLength(points[0] - points[1]);
-        return config.camConfig.FOCUS_PIXEL * config.ARMOR_H / x;
+        return runtime->config->camConfig.FOCUS_PIXEL * runtime->config->ARMOR_H / x;
     }
 }
 
 // 装甲板的优先级比较
-bool ArmorBox::operator<(const ArmorBox &box) const {
-    if (id != box.id) {
-        if (box_color == BOX_BLUE) {
-            return prior_blue[id2name[id]] < prior_blue[id2name[box.id]];
-        } else {
-            return prior_red[id2name[id]] < prior_red[id2name[box.id]];
-        }
-    } else {
-        auto d1 =
-            (rect.x - config.IMAGE_CENTER_X) *
-                (rect.x - config.IMAGE_CENTER_X) +
-            (rect.y - config.IMAGE_CENTER_Y) * (rect.y - config.IMAGE_CENTER_Y);
-        auto d2 = (box.rect.x - config.IMAGE_CENTER_X) *
-                      (box.rect.x - config.IMAGE_CENTER_X) +
-                  (box.rect.y - config.IMAGE_CENTER_Y) *
-                      (box.rect.y - config.IMAGE_CENTER_Y);
-        return d1 < d2;
-    }
-}
+// bool ArmorBox::operator<(const ArmorBox &box) const {
+//     if (id != box.id) {
+//         if (box_color == BOX_BLUE) {
+//             return prior_blue[id2name[id]] < prior_blue[id2name[box.id]];
+//         } else {
+//             return prior_red[id2name[id]] < prior_red[id2name[box.id]];
+//         }
+//     } else {
+//         auto d1 =
+//             (rect.x - config.IMAGE_CENTER_X) *
+//                 (rect.x - config.IMAGE_CENTER_X) +
+//             (rect.y - config.IMAGE_CENTER_Y) * (rect.y - config.IMAGE_CENTER_Y);
+//         auto d2 = (box.rect.x - config.IMAGE_CENTER_X) *
+//                       (box.rect.x - config.IMAGE_CENTER_X) +
+//                   (box.rect.y - config.IMAGE_CENTER_Y) *
+//                       (box.rect.y - config.IMAGE_CENTER_Y);
+//         return d1 < d2;
+//     }
+// }

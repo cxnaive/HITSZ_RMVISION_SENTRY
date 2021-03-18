@@ -44,6 +44,7 @@ ArmorDetector::ArmorDetector() {
                      BATCH_SIZE * OUTPUT_SIZE * sizeof(float)));
 
     NVCHECK(cudaStreamCreate(&stream));
+    LOG(INFO) << "YOLOV5s net init done.";
 }
 
 ArmorDetector::~ArmorDetector() {

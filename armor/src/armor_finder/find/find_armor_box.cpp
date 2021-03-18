@@ -119,7 +119,7 @@ bool ArmorFinder::findAccurateArmorBox(const cv::Mat &src, ArmorBox &box) {
     if (!findLightBlobs(src, light_blobs)) {               //一个可能的灯条也找不到的话
         return false;
     }
-    if (config.show_light_blobs && state==SEARCHING_STATE) {
+    if (config->show_light_blobs && state==SEARCHING_STATE) {
         showLightBlobs("light_blobs", src, light_blobs);
     }
 // 对灯条进行匹配得出装甲板候选区

@@ -3,7 +3,7 @@
 PROJECT(HITSZ-RM-CV)
 SET(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -D_MWAITXINTRIN_H_INCLUDED -O3")
-set(use_u2_camera true)
+set(use_u2_camera false)
 
 
 # cuda
@@ -12,7 +12,6 @@ include_directories(/usr/local/cuda/include)
 link_directories(/usr/local/cuda/lib64)
 
 #Include
-include_directories(${PROJECT_SOURCE_DIR}/energy/include)
 include_directories(${PROJECT_SOURCE_DIR}/armor/include)
 include_directories(${PROJECT_SOURCE_DIR}/net/include)
 include_directories(${PROJECT_SOURCE_DIR}/others/include)
@@ -39,7 +38,6 @@ file(COPY ${resources} DESTINATION ${CMAKE_BINARY_DIR}/)
 #Src
 file(GLOB_RECURSE sourcefiles 
 "others/**/*.h" "others/**/*.cpp"
-"energy/**/*.h" "energy/**/*.cpp" 
 "net/**/*.cpp" "net/**/*.h" 
 "config/**/*.cpp" "config/**/*.h" 
 "com/**/*.h"  "com/**/*.cpp" "com/**/*.cc" "com/**/*.c"

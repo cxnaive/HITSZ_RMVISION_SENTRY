@@ -3,7 +3,7 @@
 #include <datatypes.h>
 #include <rmconfig.h>
 #include <serial/serial.h>
-
+#include <runtime.h>
 #include <mutex>
 
 struct McuConfig {
@@ -19,18 +19,20 @@ struct McuConfig {
 
 class RmSerial {
    public:
+    RmRunTime* runtime;
     serial::Serial* active_port;
+    std::mutex receive_mtx;
+    McuConfig receive_config_data;
+    RmSerial(RmRunTime* _runtime, serial::Serial* active_port);
     ~RmSerial();
     bool init_success;
     bool thread_running;
-    bool init();
     bool isConnected() { return active_port->isOpen(); }
     bool send_data(const SendData& data);
     bool send_data(uint8_t* data, size_t size);
+    void update_config();
     void start_thread();
     void stop_thread();
 };
 
-extern std::mutex receive_mtx;
-extern McuConfig receive_config_data;
 #endif

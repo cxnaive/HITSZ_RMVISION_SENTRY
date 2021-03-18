@@ -1,12 +1,9 @@
-#include <armor_finder/armor_finder.h>
-#include <camera/cam_wrapper.h>
-#include <camera/video_wrapper.h>
-#include <energy.h>
 #include <glog/logging.h>
 #include <rmconfig.h>
 #include <rmserial.h>
 #include <rmtime.h>
-
+#include <runtime.h>
+#include <armor_finder/armor_finder.h>
 #include <csignal>
 #include <opencv2/opencv.hpp>
 
@@ -20,116 +17,75 @@ void sig_handler(int sig) {
     }
 }
 
-//程序运行时信息
-RmConfig config;
-//程序运行时时间类
+serial::Serial* active_port;
+//程序运行时钟
 RmTime rmTime;
-//串口实例
-RmSerial rmSerial;
-//摄像头实例
-Camera* cam = nullptr;
-// Video实例
-VideoWrapper* video = nullptr;
-// ArmorFinder实例
-ArmorFinder* armor_finder;
-// Energy 实例
-Energy* energy;
-//运行时原图实例
-cv::Mat src;
-//保存上一次循环运行模式
-char lastRunMode;
+//程序运行时信息
+RmRunTime* runtime_up;
+RmRunTime* runtime_down;
+//程序串口封装
+RmSerial* serial_up;
+RmSerial* serial_down;
+//装甲板击打主程序
+ArmorFinder* armor_finder_up;
+ArmorFinder* armor_finder_down;
+
 static void OnInit(const char* cmd) {
     FLAGS_alsologtostderr = true;
     FLAGS_colorlogtostderr = true;
     google::InitGoogleLogging(cmd);
 
     rmTime.init();
-    config.init_from_file();
-    rmSerial.init();
-    if (config.use_video) {
-        video = new VideoWrapper(config.video_path);
-        video->init();
-    } else {
-        cam = new Camera(config.camera_sn, config.camConfig);
-        cam->init();
-        if(!cam->init_is_successful()){
-            LOG(ERROR) << "Camera Init Failed!";
-            keepRunning = false;
+    runtime_up = new RmRunTime("rmconfig_up.json");
+    runtime_down = new RmRunTime("rmconfig_down.json");
+    if (!runtime_up->status_ok || !runtime_down->status_ok) {
+        keepRunning = 0;
+        return;
+    }
+
+    active_port = new serial::Serial(runtime_up->config->uart_port, 115200,
+                                     serial::Timeout::simpleTimeout(1000));
+
+    serial_up = new RmSerial(runtime_up, active_port);
+    serial_down = new RmSerial(runtime_down, active_port);
+
+    armor_finder_up = new ArmorFinder(runtime_up, serial_up);
+    armor_finder_down = new ArmorFinder(runtime_down, serial_down);
+}
+
+static void OnClose() {
+    if (runtime_up != nullptr) delete runtime_up;
+    if (runtime_down != nullptr) delete runtime_down;
+    if (active_port != nullptr) delete active_port;
+}
+
+void Run(RmRunTime* runtime, ArmorFinder* armor_finder) {
+    if (runtime->config->use_video) {
+        if (!runtime->video->read(runtime->src)) {
+            runtime->status_ok = false;
             return;
         }
-        cam->setParam(config.ARMOR_CAMERA_EXPOSURE, config.ARMOR_CAMERA_GAIN);
-        cam->start();
+        cv::resize(runtime->src, runtime->src, cv::Size(640, 360));
+    } else {
+        runtime->cam->read(runtime->src);
+        // config.camConfig.undistort(src);
     }
-
-    armor_finder =
-        new ArmorFinder(config.ENEMY_COLOR, rmSerial, config.ANTI_TOP);
-    energy = new Energy(rmSerial, config.ENEMY_COLOR);
-    lastRunMode = ARMOR_STATE;
+    if (runtime->config->show_origin) {
+        cv::imshow("origin", runtime->src);
+    }
+    armor_finder->run(runtime->src);
 }
-
-static void OnClose() { config.write_to_file(); }
-
-void update_config() {
-    receive_mtx.lock();
-    config.RUNMODE = receive_config_data.state;
-    config.ENEMY_COLOR = receive_config_data.enemy_color;
-    config.ANTI_TOP = receive_config_data.anti_top;
-    config.MCU_DELTA_X = receive_config_data.delta_x;
-    config.MCU_DELTA_Y = receive_config_data.delta_y;
-    config.BULLET_SPEED = receive_config_data.bullet_speed;
-    receive_mtx.unlock();
-}
-void check_mode_and_run(cv::Mat& src) {
-    update_config();
-    if (lastRunMode == ARMOR_STATE && (config.RUNMODE == SMALL_ENERGY_STATE ||
-                                       config.RUNMODE == BIG_ENERGY_STATE)) {
-        if (!config.use_video)
-            cam->setParam(config.ENERGY_CAMERA_EXPOSURE,
-                          config.ENERGY_CAMERA_GAIN);
-        LOG(WARNING) << "Change to Energy mode:" << config.RUNMODE;
-    }
-    if ((lastRunMode == SMALL_ENERGY_STATE ||
-         lastRunMode == BIG_ENERGY_STATE) &&
-        config.RUNMODE == ARMOR_STATE) {
-        if (!config.use_video)
-            cam->setParam(config.ARMOR_CAMERA_EXPOSURE,
-                          config.ARMOR_CAMERA_GAIN);
-        LOG(WARNING) << "Change to Armor mode:" << config.RUNMODE;
-    }
-    lastRunMode = config.RUNMODE;
-    if (config.RUNMODE == ARMOR_STATE) {
-        armor_finder->run(src);
-    }
-    if (config.RUNMODE == SMALL_ENERGY_STATE) {
-        energy->is_big = false;
-        energy->is_small = true;
-        energy->run(src);
-    }
-    if (config.RUNMODE == BIG_ENERGY_STATE) {
-        energy->is_big = true;
-        energy->is_small = false;
-        energy->run(src);
-    }
-}
-
 int main(int argc, char** argv) {
     signal(SIGINT, sig_handler);
     OnInit(argv[0]);
+
     while (keepRunning) {
-        if (config.use_video) {
-            if (!video->read(src)) break;
-            cv::resize(src, src, cv::Size(640, 360));
-        } else {
-            cam->read(src);
-            // config.camConfig.undistort(src);
-        }
-        if (config.show_origin) {
-            cv::imshow("origin", src);
-            // cv::waitKey(1);
-        }
-        check_mode_and_run(src);
-        // cv::waitKey(10);
-        if (config.has_show) cv::waitKey(1);
+        Run(runtime_up,armor_finder_up);
+        Run(runtime_down,armor_finder_down);
+        if (!runtime_up->status_ok || !runtime_down->status_ok) break;
+
+        if (runtime_up->config->has_show || runtime_down->config->has_show)
+            cv::waitKey(1);
     }
     LOG(INFO) << "exiting...";
     OnClose();

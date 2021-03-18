@@ -8,7 +8,8 @@ void CameraConfig::init() {
     FOCUS_PIXEL = (fx + fy) / 2;
 }
 
-void RmConfig::init_from_file() {
+RmConfig::RmConfig(std::string _configPath) {
+    configPath = _configPath;
     std::ifstream ifs;
     ifs.open(configPath);
     if (!ifs.is_open()) {

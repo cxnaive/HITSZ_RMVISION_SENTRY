@@ -5,6 +5,8 @@
 
 #include <opencv2/opencv.hpp>
 #include <armor_finder/light_blobs.h>
+#include <runtime.h>
+
 
 /******************* 装甲板类定义　**********************/
 class ArmorBox {
@@ -28,11 +30,11 @@ class ArmorBox {
     cv::Point2f getCenter() const;    // 获取装甲板中心
     double getBlobsDistance() const;  // 获取两个灯条中心间距
     double lengthDistanceRatio() const;  // 获取灯条中心距和灯条长度的比值
-    double getBoxDistance() const;  // 获取装甲板到摄像头的距离
+    double getBoxDistance(RmRunTime* runtime) const;  // 获取装甲板到摄像头的距离
     std::vector<cv::Point2f> getArmorPoints() const;
-    std::pair<cv::Point3d,cv::Point3d> armorSolvePnP() const;
+    std::pair<cv::Point3d,cv::Point3d> armorSolvePnP(RmRunTime* runtime) const;
     //BoxOrientation getOrientation() const;  // 获取装甲板朝向(误差较大，已弃用)
-    bool operator<(const ArmorBox &box) const;  // 装甲板优先级比较
+    //bool operator<(const ArmorBox &box) const;  // 装甲板优先级比较
 };
 
 typedef std::vector<ArmorBox> ArmorBoxes;

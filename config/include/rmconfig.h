@@ -30,7 +30,7 @@ public:
 };
 class RmConfig{
 public:
-    const char* configPath = "rmconfig.json";
+    std::string configPath;
     //config
     //
     bool show_origin = false;
@@ -89,7 +89,7 @@ public:
     CameraConfig camConfig;
     
 
-    void init_from_file();
+    RmConfig(std::string _configPath);
     void write_to_file();
 };
 

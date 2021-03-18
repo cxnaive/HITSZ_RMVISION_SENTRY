@@ -16,14 +16,14 @@ bool ArmorFinder::stateSearchingTarget(cv::Mat& src) {
     std::sort(
         res.begin(), res.end(), [&](const ArmorInfo& a, const ArmorInfo& b) {
             if (a.id == b.id) {
-                auto d1 = (a.bbox.x - config.IMAGE_CENTER_X) *
-                              (a.bbox.x - config.IMAGE_CENTER_X) +
-                          (a.bbox.y - config.IMAGE_CENTER_Y) *
-                              (a.bbox.y - config.IMAGE_CENTER_Y);
-                auto d2 = (b.bbox.x - config.IMAGE_CENTER_X) *
-                              (b.bbox.x - config.IMAGE_CENTER_X) +
-                          (b.bbox.y - config.IMAGE_CENTER_Y) *
-                              (b.bbox.y - config.IMAGE_CENTER_Y);
+                auto d1 = (a.bbox.x - config->IMAGE_CENTER_X) *
+                              (a.bbox.x - config->IMAGE_CENTER_X) +
+                          (a.bbox.y - config->IMAGE_CENTER_Y) *
+                              (a.bbox.y - config->IMAGE_CENTER_Y);
+                auto d2 = (b.bbox.x - config->IMAGE_CENTER_X) *
+                              (b.bbox.x - config->IMAGE_CENTER_X) +
+                          (b.bbox.y - config->IMAGE_CENTER_Y) *
+                              (b.bbox.y - config->IMAGE_CENTER_Y);
                 return d1 < d2;
             } else {
                 if (enemy_color == ENEMY_BLUE)

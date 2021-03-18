@@ -61,7 +61,7 @@ void showNetBoxes(std::string windows_name, const cv::Mat &src,
  * 显示单个装甲板区域及其类别 *
  **************************/
 void showArmorBox(std::string windows_name, const cv::Mat &src,
-                  const ArmorBox &box) {
+                  const ArmorBox &box, RmRunTime* runtime) {
     static Mat image2show;
     if (box.rect == cv::Rect2d()) {
         imshow(windows_name, src);
@@ -76,7 +76,7 @@ void showArmorBox(std::string windows_name, const cv::Mat &src,
     rectangle(image2show, box.rect, Scalar(0, 255, 0), 1);
     drawPoints4(image2show, box.getArmorPoints());
     char dist[10];
-    sprintf(dist, "%.1f", box.getBoxDistance());
+    sprintf(dist, "%.1f", box.getBoxDistance(runtime));
     if (name2color[id2name[box.id]] == BOX_BLUE) {
         rectangle(image2show, box.rect, Scalar(0, 255, 0), 1);
         putText(image2show, id2name[box.id] + " " + dist,
@@ -91,7 +91,7 @@ void showArmorBox(std::string windows_name, const cv::Mat &src,
         LOG(INFO) << "Invalid box id:" << box.id << "!";
     }
     imshow(windows_name, image2show);
-    if (config.save_video) {
+    if (runtime->config->save_video) {
         saveVideos(image2show, "ArmorBox");
     }
 }

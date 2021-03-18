@@ -4,8 +4,8 @@
 
 #include <cmath>
 
-static bool sendTarget(RmSerial &serial, double x, double y, double z,
-                       uint16_t shoot_delay) {
+bool ArmorFinder::sendTarget(RmSerial* serial, double x, double y, double z,
+                             uint16_t shoot_delay) {
     static short x_tmp, y_tmp, z_tmp;
     // uint8_t buff[10];
     SendData data;
@@ -15,8 +15,9 @@ static bool sendTarget(RmSerial &serial, double x, double y, double z,
     data.z = static_cast<float>(z);
     data.u = shoot_delay;
     data.end_flag = 'e';
-    if(config.log_send_target ) LOG(INFO) << "Target:" << data.x << " " << data.y;
-    return serial.send_data(data);
+    if (config->log_send_target)
+        LOG(INFO) << "Target:" << data.x << " " << data.y;
+    return serial->send_data(data);
     // buff[0] = 's';
     // buff[1] = static_cast<char>((x_tmp >> 8) & 0xFF);
     // buff[2] = static_cast<char>((x_tmp >> 0) & 0xFF);
@@ -40,24 +41,26 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     cv::Point3d trans;
     double dist;
     double yaw, pitch;
-    if (config.use_pnp) {
-        auto pnp_result = target_box.armorSolvePnP();
+    if (config->use_pnp) {
+        auto pnp_result = target_box.armorSolvePnP(runtime);
         trans = pnp_result.second;
         dist = trans.z;
         yaw = atan(trans.x / trans.z) * 180 / PI;
         pitch = atan(trans.y / trans.z) * 180 / PI;
     } else {
-        dist = target_box.getBoxDistance();
+        dist = target_box.getBoxDistance(runtime);
         cv::Point2f center = target_box.getCenter();
-        yaw = atan((center.x - config.IMAGE_CENTER_X + config.ARMOR_DELTA_X) / config.camConfig.fx) *
+        yaw = atan((center.x - config->IMAGE_CENTER_X + config->ARMOR_DELTA_X) /
+                   config->camConfig.fx) *
               180 / PI;
-        pitch = atan((center.y - config.IMAGE_CENTER_Y) / config.camConfig.fy) *
+        pitch = atan((center.y - config->IMAGE_CENTER_Y) / config->camConfig.fy) *
                 180 / PI;
     }
-    double dpitch = config.ARMOR_PITCH_DELTA_K * dist + config.ARMOR_PITCH_DELTA_B;
+    double dpitch =
+        config->ARMOR_PITCH_DELTA_K * dist + config->ARMOR_PITCH_DELTA_B;
     pitch -= dpitch;
 
-    if (config.log_send_target) {
+    if (config->log_send_target) {
         LOG(INFO) << "PNP: " << trans;
     }
     // calc_fps
@@ -75,8 +78,8 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     return sendTarget(serial, yaw, -pitch, 1, shoot_delay);
 }
 
-bool ArmorFinder::sendLostBox() { 
+bool ArmorFinder::sendLostBox() {
     PitchPID.clear();
     YawPID.clear();
-    return sendTarget(serial, 0, 0, 0, 0); 
+    return sendTarget(serial, 0, 0, 0, 0);
 }

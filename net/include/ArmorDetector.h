@@ -6,6 +6,7 @@
 #include "common.h"
 #include "cuda_runtime_api.h"
 #include "logging.h"
+#include <glog/logging.h>
 
 #define NMS_THRESH 0.4
 #define CONF_THRESH 0.45
