@@ -80,8 +80,14 @@ int main(int argc, char** argv) {
     OnInit(argv[0]);
 
     while (keepRunning) {
-        Run(runtime_up,armor_finder_up);
-        Run(runtime_down,armor_finder_down);
+        //Run(runtime_up,armor_finder_up);
+        //Run(runtime_down,armor_finder_down);
+        std::thread up_thread(Run,runtime_up,armor_finder_up);
+        std::thread down_thread(Run,runtime_down,armor_finder_down);
+
+        up_thread.join();
+        down_thread.join();
+
         if (!runtime_up->status_ok || !runtime_down->status_ok) break;
 
         if (runtime_up->config->has_show || runtime_down->config->has_show)

@@ -14,6 +14,7 @@ bool ArmorFinder::sendTarget(RmSerial* serial, double x, double y, double z,
     data.y = static_cast<float>(y);
     data.z = static_cast<float>(z);
     data.u = shoot_delay;
+    
     data.end_flag = 'e';
     if (config->log_send_target)
         LOG(INFO) << "Target:" << data.x << " " << data.y;
@@ -67,7 +68,7 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     ++fps_cnt;
     double now_time = rmTime.seconds();
     if (now_time - last_time > 2) {
-        LOG(INFO) << "Armor fps: " << fps_cnt / (now_time - last_time);
+        LOG(INFO) << runtime->config->configPath << ":Armor fps: " << fps_cnt / (now_time - last_time);
         last_time = now_time;
         fps_cnt = 0;
     }
@@ -75,11 +76,11 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     yaw = YawPID.updateError(yaw);
     pitch = PitchPID.updateError(pitch);
 
-    return sendTarget(serial, yaw, -pitch, 1, shoot_delay);
+    return sendTarget(serial, yaw, -pitch, runtime->config->SERIAL_OFFSET + 1, shoot_delay);
 }
 
 bool ArmorFinder::sendLostBox() {
     PitchPID.clear();
     YawPID.clear();
-    return sendTarget(serial, 0, 0, 0, 0);
+    return sendTarget(serial, 0, 0, runtime->config->SERIAL_OFFSET, 0);
 }

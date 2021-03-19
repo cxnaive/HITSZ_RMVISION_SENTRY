@@ -60,6 +60,7 @@ public:
     //graphic
     bool has_show = false;
     //DATA
+    int SERIAL_OFFSET = 0;
     int ARMOR_CAMERA_EXPOSURE = 4000;
     int ARMOR_CAMERA_GAIN = 8;
     int ENERGY_CAMERA_EXPOSURE = 4000;

@@ -54,6 +54,7 @@ RmConfig::RmConfig(std::string _configPath) {
                show_energy_extra || show_process || show_net_box;
     // data
     Json::Value data = root["config_data"];
+    SERIAL_OFFSET = data["SERIAL_OFFSET"].asInt();
     ARMOR_CAMERA_GAIN = data["ARMOR_CAMERA_GAIN"].asInt();
     ARMOR_CAMERA_EXPOSURE = data["ARMOR_CAMERA_EXPOSURE"].asInt();
     ENERGY_CAMERA_GAIN = data["ENERGY_CAMERA_GAIN"].asInt();
@@ -121,6 +122,7 @@ void RmConfig::write_to_file() {
 
     // data
     Json::Value data;
+    data["SERIAL_OFFSET"] = SERIAL_OFFSET;
     data["ARMOR_CAMERA_GAIN"] = ARMOR_CAMERA_GAIN;
     data["ARMOR_CAMERA_EXPOSURE"] = ARMOR_CAMERA_EXPOSURE;
     data["ENERGY_CAMERA_GAIN"] = ENERGY_CAMERA_GAIN;
