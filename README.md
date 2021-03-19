@@ -116,33 +116,27 @@ sudo ./rmcv
 ### 2.数据接收结构体
 
 ```c++
-struct McuData {
-    float curr_yaw;      // 当前云台yaw角度
-    float curr_pitch;    // 当前云台pitch角
-    uint8_t state;       // 当前状态，自瞄-大符-小符
-    uint8_t mark;        // 云台角度标记位
-    uint8_t anti_top;    // 是否为反陀螺模式
-    uint8_t enemy_color; // 敌方颜色
-    int delta_x;         // 能量机关x轴补偿量
-    int delta_y;         // 能量机关y轴补偿量
-};
+typedef struct _McuData {
+    uint8_t start_flag;  // 帧头标志，字符's'
+    uint8_t type;        // 返回类型
+    uint32_t x;          // 数据x
+    uint32_t y;          // 数据y
+    uint8_t end_flag;    // 帧尾标识，字符'e'
+} McuData;
 ```
-
-每个数据帧后使用字符```'\n'```作为帧尾标志
 
 ### 3.数据发送结构体
 
 ```c++
-struct SendData {
-    char start_flag;      // 帧头标志，字符's'
-    int16_t yaw;          // float类型的偏移角度(以度为单位)/100*(32768-1)
-    int16_t pitch;        // float类型的偏移角度(以度为单位)/100*(32768-1)
-    uint16_t shoot_delay; // 反陀螺模式下的发射延迟
-    char end_flag;        // 帧尾标识，字符'e'
-};
+typedef struct _SendData {
+    uint8_t start_flag;   // 帧头标志，字符's'
+    float x;              // Yaw
+    float y;              // Pitch
+    float z;              // state
+    uint16_t u;           // shoot_delay;
+    uint8_t end_flag;     // 帧尾标识，字符'e'
+} SendData;
 ```
-
-实际发送代码中没有使用这个结构体，而是使用uint8_t类型数组直接赋值代替
 
 ## 八、代码命名规范
 
