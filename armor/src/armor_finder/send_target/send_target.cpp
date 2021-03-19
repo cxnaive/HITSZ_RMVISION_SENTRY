@@ -14,10 +14,10 @@ bool ArmorFinder::sendTarget(RmSerial* serial, double x, double y, double z,
     data.y = static_cast<float>(y);
     data.z = static_cast<float>(z);
     data.u = shoot_delay;
-    
+
     data.end_flag = 'e';
     if (config->log_send_target)
-        LOG(INFO) << "Target:" << data.x << " " << data.y;
+        LOG(INFO) << runtime->config->configPath <<":Target:" << data.x << " " << data.y;
     return serial->send_data(data);
     // buff[0] = 's';
     // buff[1] = static_cast<char>((x_tmp >> 8) & 0xFF);

@@ -71,7 +71,7 @@ void Run(RmRunTime* runtime, ArmorFinder* armor_finder) {
         // config.camConfig.undistort(src);
     }
     if (runtime->config->show_origin) {
-        cv::imshow("origin", runtime->src);
+        cv::imshow(runtime->config->configPath+":origin", runtime->src);
     }
     armor_finder->run(runtime->src);
 }
