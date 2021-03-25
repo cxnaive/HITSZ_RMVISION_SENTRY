@@ -72,6 +72,8 @@ RmConfig::RmConfig(std::string _configPath) {
     ARMOR_PITCH_KP = data["ARMOR_PITCH_KP"].asDouble();
     ARMOR_PITCH_KI = data["ARMOR_PITCH_KI"].asDouble();
     ARMOR_PITCH_KD = data["ARMOR_PITCH_KD"].asDouble();
+    SHOT_THRESHOLD = data["SHOT_THRESHOLD"].asDouble();
+
 
     // camera
     Json::Value camera = root["camera"];
@@ -140,6 +142,7 @@ void RmConfig::write_to_file() {
     data["ARMOR_PITCH_KP"] = ARMOR_PITCH_KP;
     data["ARMOR_PITCH_KI"] = ARMOR_PITCH_KI;
     data["ARMOR_PITCH_KD"] = ARMOR_PITCH_KD;
+    data["SHOT_THRESHOLD"] = SHOT_THRESHOLD;
 
     // camera
     Json::Value camera;

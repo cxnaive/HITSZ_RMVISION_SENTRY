@@ -86,6 +86,7 @@ public:
     double ARMOR_YAW_KP = 0.75;
     double ARMOR_YAW_KI = 0.01;
     double ARMOR_YAW_KD = 0.4;
+    double SHOT_THRESHOLD = 8;
     //Camera
     CameraConfig camConfig;
     

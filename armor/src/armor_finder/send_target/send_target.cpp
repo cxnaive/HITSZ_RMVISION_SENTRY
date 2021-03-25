@@ -17,7 +17,8 @@ bool ArmorFinder::sendTarget(RmSerial* serial, double x, double y, double z,
 
     data.end_flag = 'e';
     if (config->log_send_target)
-        LOG(INFO) << runtime->config->configPath <<":Target:" << data.x << " " << data.y;
+        LOG(INFO) << runtime->config->configPath << ":Target:" << data.x << " "
+                  << data.y;
     return serial->send_data(data);
     // buff[0] = 's';
     // buff[1] = static_cast<char>((x_tmp >> 8) & 0xFF);
@@ -54,29 +55,37 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
         yaw = atan((center.x - config->IMAGE_CENTER_X + config->ARMOR_DELTA_X) /
                    config->camConfig.fx) *
               180 / PI;
-        pitch = atan((center.y - config->IMAGE_CENTER_Y) / config->camConfig.fy) *
-                180 / PI;
+        pitch =
+            atan((center.y - config->IMAGE_CENTER_Y) / config->camConfig.fy) *
+            180 / PI;
     }
     double dpitch =
         config->ARMOR_PITCH_DELTA_K * dist + config->ARMOR_PITCH_DELTA_B;
     pitch -= dpitch;
 
+    double error = sqrt(pitch * pitch + yaw * yaw);
+
     if (config->log_send_target) {
-        LOG(INFO) << "PNP: " << trans;
+        LOG(INFO) << "YAW: " << yaw << " PITCH: " << pitch;
     }
     // calc_fps
     ++fps_cnt;
     double now_time = rmTime.seconds();
     if (now_time - last_time > 2) {
-        LOG(INFO) << runtime->config->configPath << ":Armor fps: " << fps_cnt / (now_time - last_time);
+        LOG(INFO) << runtime->config->configPath
+                  << ":Armor fps: " << fps_cnt / (now_time - last_time);
         last_time = now_time;
         fps_cnt = 0;
     }
     //使用PID控制
     yaw = YawPID.updateError(yaw);
     pitch = PitchPID.updateError(pitch);
-
-    return sendTarget(serial, yaw, -pitch, runtime->config->SERIAL_OFFSET + 1, shoot_delay);
+    if (error < config->SHOT_THRESHOLD) {
+        return sendTarget(serial, yaw, -pitch,
+                          runtime->config->SERIAL_OFFSET + 2, shoot_delay);
+    } else
+        return sendTarget(serial, yaw, -pitch,
+                          runtime->config->SERIAL_OFFSET + 1, shoot_delay);
 }
 
 bool ArmorFinder::sendLostBox() {

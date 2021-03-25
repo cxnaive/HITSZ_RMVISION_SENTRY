@@ -199,7 +199,7 @@ bool Camera::init() {
         GXSetEnum(g_hDevice, GX_ENUM_GAIN_AUTO, GX_GAIN_AUTO_OFF);
         GXSetEnum(g_hDevice, GX_ENUM_BLACKLEVEL_AUTO, GX_BLACKLEVEL_AUTO_OFF);
         GXSetEnum(g_hDevice, GX_ENUM_BALANCE_WHITE_AUTO,
-                  GX_BALANCE_WHITE_AUTO_CONTINUOUS);
+                  GX_BALANCE_WHITE_AUTO_ONCE);
         GXSetEnum(g_hDevice, GX_ENUM_DEAD_PIXEL_CORRECT,
                   GX_DEAD_PIXEL_CORRECT_OFF);
 
