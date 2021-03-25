@@ -120,7 +120,7 @@ bool ArmorFinder::findAccurateArmorBox(const cv::Mat &src, ArmorBox &box) {
         return false;
     }
     if (config->show_light_blobs && state==SEARCHING_STATE) {
-        showLightBlobs("light_blobs", src, light_blobs);
+        showLightBlobs(runtime->config->configPath+":light_blobs", src, light_blobs);
     }
 // 对灯条进行匹配得出装甲板候选区
     if (!matchArmorBoxes(src, light_blobs, armor_boxes)) {

@@ -66,7 +66,7 @@ ArmorFinder::ArmorFinder(RmRunTime *_runtime, RmSerial *_serial)
 std::vector<ArmorInfo> ArmorFinder::filterArmorInfoByColor(
     const std::vector<ArmorInfo> &armors, const cv::Mat &src) {
     if (config->show_net_box) {
-        showNetBoxes("net boxes", src, armors);
+        showNetBoxes(runtime->config->configPath+":net boxes", src, armors);
     }
     std::vector<ArmorInfo> res;
     for (auto it : armors) {
@@ -125,6 +125,6 @@ void ArmorFinder::run(cv::Mat &src) {    // 自瞄主函数
 
     if (config->show_armor_box &&
         target_box.rect != cv::Rect2d()) {  // 根据条件显示当前目标装甲板
-        showArmorBox("box", src, target_box, runtime);
+        showArmorBox(runtime->config->configPath+":box", src, target_box, runtime);
     }
 }
