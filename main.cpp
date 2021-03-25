@@ -24,8 +24,7 @@ RmTime rmTime;
 RmRunTime* runtime_up;
 RmRunTime* runtime_down;
 //程序串口封装
-RmSerial* serial_up;
-RmSerial* serial_down;
+RmSerial* serial_all;
 //装甲板击打主程序
 ArmorFinder* armor_finder_up;
 ArmorFinder* armor_finder_down;
@@ -46,11 +45,10 @@ static void OnInit(const char* cmd) {
     active_port = new serial::Serial(runtime_up->config->uart_port, 115200,
                                      serial::Timeout::simpleTimeout(1000));
 
-    serial_up = new RmSerial(runtime_up, active_port);
-    serial_down = new RmSerial(runtime_down, active_port);
+    serial_all = new RmSerial(runtime_up, active_port);
 
-    armor_finder_up = new ArmorFinder(runtime_up, serial_up);
-    armor_finder_down = new ArmorFinder(runtime_down, serial_down);
+    armor_finder_up = new ArmorFinder(runtime_up, serial_all);
+    armor_finder_down = new ArmorFinder(runtime_down, serial_all);
 }
 
 static void OnClose() {
@@ -80,8 +78,7 @@ int main(int argc, char** argv) {
     OnInit(argv[0]);
 
     while (keepRunning) {
-        //Run(runtime_up,armor_finder_up);
-        //Run(runtime_down,armor_finder_down);
+        serial_all->update_config();
         std::thread up_thread(Run,runtime_up,armor_finder_up);
         std::thread down_thread(Run,runtime_down,armor_finder_down);
 

@@ -7,6 +7,7 @@ RmSerial::~RmSerial() { stop_thread(); }
 bool RmSerial::send_data(uint8_t* data, size_t size) {
     return active_port->write(data, size) == size;
 }
+
 bool RmSerial::send_data(const SendData& data) {
     return send_data((uint8_t*)(&data), sizeof(SendData));
 }
@@ -108,14 +109,14 @@ void RmSerial::stop_thread() {
 }
 
 void RmSerial::update_config() {
-    // receive_mtx.lock();
-    // runtime->config->RUNMODE = receive_config_data.state;
-    // runtime->config->ENEMY_COLOR = receive_config_data.enemy_color;
-    // runtime->config->ANTI_TOP = receive_config_data.anti_top;
-    // runtime->config->MCU_DELTA_X = receive_config_data.delta_x;
-    // runtime->config->MCU_DELTA_Y = receive_config_data.delta_y;
-    // runtime->config->BULLET_SPEED = receive_config_data.bullet_speed;
-    // receive_mtx.unlock();
+    receive_mtx.lock();
+    runtime->config->RUNMODE = receive_config_data.state;
+    runtime->config->ENEMY_COLOR = receive_config_data.enemy_color;
+    runtime->config->ANTI_TOP = receive_config_data.anti_top;
+    runtime->config->MCU_DELTA_X = receive_config_data.delta_x;
+    runtime->config->MCU_DELTA_Y = receive_config_data.delta_y;
+    runtime->config->BULLET_SPEED = receive_config_data.bullet_speed;
+    receive_mtx.unlock();
 }
 
 RmSerial::RmSerial(RmRunTime* _runtime,serial::Serial* _active_port) {
@@ -131,7 +132,7 @@ RmSerial::RmSerial(RmRunTime* _runtime,serial::Serial* _active_port) {
     receive_config_data.enemy_color = runtime->config->ENEMY_COLOR;
     receive_config_data.state = runtime->config->RUNMODE;
     //开启数据接受线程
-    // start_thread();
+    start_thread();
     if (active_port != nullptr && active_port->isOpen()) {
         LOG(INFO) << "Successfully initialized port " << runtime->config->uart_port;
         init_success = true;
