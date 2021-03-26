@@ -37,7 +37,6 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     if (shoot_delay) {
         LOG(INFO) << "next box" << shoot_delay << " ms";
     }
-    static int fps_cnt = 0;
     static double last_time = 0;
 
     cv::Point3d trans;

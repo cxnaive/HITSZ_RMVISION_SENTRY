@@ -61,7 +61,8 @@ ArmorFinder::ArmorFinder(RmRunTime *_runtime, RmSerial *_serial)
                _runtime->config->ARMOR_PITCH_KD),  // PITCH轴PID控制
       contour_area(
           0),  //装甲区域亮点个数，用于数字识别未启用时判断是否跟丢（已弃用）
-      tracking_cnt(0) {  // 记录追踪帧数，用于定时退出追踪
+      tracking_cnt(0),
+      fps_cnt(0) {  // 记录追踪帧数，用于定时退出追踪
 }
 std::vector<ArmorInfo> ArmorFinder::filterArmorInfoByColor(
     const std::vector<ArmorInfo> &armors, const cv::Mat &src) {
