@@ -56,6 +56,7 @@ class ArmorFinder {
     RmConfig* config;
     RmRunTime* runtime;
     double last_front_time;  // 上次陀螺正对时间
+    double last_dpitch;
     int anti_top_cnt;
     RoundQueue<double, 4> top_periodms;  // 陀螺周期循环队列
     std::vector<double> time_seq;        // 一个周期内的时间采样点

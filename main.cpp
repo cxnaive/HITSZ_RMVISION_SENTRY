@@ -50,6 +50,23 @@ static void OnInit(const char* cmd) {
     armor_finder_up = new ArmorFinder(runtime_up, serial_all);
     armor_finder_down = new ArmorFinder(runtime_down, serial_all);
 }
+void update_config() {
+    serial_all->receive_mtx.lock();
+    runtime_up->config->RUNMODE = serial_all->receive_config_data.state;
+    runtime_up->config->ENEMY_COLOR = serial_all->receive_config_data.enemy_color;
+    runtime_up->config->ANTI_TOP = serial_all->receive_config_data.anti_top;
+    runtime_up->config->MCU_DELTA_X = serial_all->receive_config_data.delta_x;
+    runtime_up->config->MCU_DELTA_Y = serial_all->receive_config_data.delta_y;
+    runtime_up->config->BULLET_SPEED = serial_all->receive_config_data.bullet_speed;
+
+    runtime_down->config->RUNMODE = serial_all->receive_config_data.state;
+    runtime_down->config->ENEMY_COLOR = serial_all->receive_config_data.enemy_color;
+    runtime_down->config->ANTI_TOP = serial_all->receive_config_data.anti_top;
+    runtime_down->config->MCU_DELTA_X = serial_all->receive_config_data.delta_x;
+    runtime_down->config->MCU_DELTA_Y = serial_all->receive_config_data.delta_y;
+    runtime_down->config->BULLET_SPEED = serial_all->receive_config_data.bullet_speed;
+    serial_all->receive_mtx.unlock();
+}
 
 static void OnClose() {
     if (runtime_up != nullptr) delete runtime_up;
@@ -58,6 +75,7 @@ static void OnClose() {
 }
 
 void Run(RmRunTime* runtime, ArmorFinder* armor_finder) {
+    
     if (runtime->config->use_video) {
         if (!runtime->video->read(runtime->src)) {
             runtime->status_ok = false;
@@ -78,7 +96,7 @@ int main(int argc, char** argv) {
     OnInit(argv[0]);
 
     while (keepRunning) {
-        serial_all->update_config();
+        update_config();
         std::thread up_thread(Run,runtime_up,armor_finder_up);
         std::thread down_thread(Run,runtime_down,armor_finder_down);
 

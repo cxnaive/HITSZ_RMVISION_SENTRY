@@ -60,7 +60,8 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     }
     double dpitch =
         config->ARMOR_PITCH_DELTA_K * dist + config->ARMOR_PITCH_DELTA_B;
-    pitch -= dpitch;
+    pitch -= dpitch ;
+    last_dpitch = dpitch;
 
     double error = sqrt(pitch * pitch + yaw * yaw);
 
@@ -79,6 +80,7 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     //使用PID控制
     yaw = YawPID.updateError(yaw);
     pitch = PitchPID.updateError(pitch);
+    //LOG(INFO) << "error:" << error;
     if (error < config->SHOT_THRESHOLD) {
         return sendTarget(serial, yaw, -pitch,
                           runtime->config->SERIAL_OFFSET + 2, shoot_delay);
