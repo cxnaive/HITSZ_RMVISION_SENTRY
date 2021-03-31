@@ -36,7 +36,7 @@ class ArmorDetector {
             // MAX_OUTPUT_BBOX_COUNT boxes that conf >= 0.1
     static constexpr const char* INPUT_BLOB_NAME = "data";
     static constexpr const char* OUTPUT_BLOB_NAME = "prob";
-    static const char* id_names[16];
+    static const char* id_names[CLASS_NUM];
     float data[BATCH_SIZE * 3 * INPUT_H * INPUT_W];
     float prob[BATCH_SIZE * OUTPUT_SIZE];
     void* buffers[2];
