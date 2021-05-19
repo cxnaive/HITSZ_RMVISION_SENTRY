@@ -35,6 +35,7 @@ class Camera : public WrapperHead {
     int64_t g_SensorWidth;
     CameraConfig camConfig;
     cv::Mat p_img;
+    cv::Mat p_full;
     void *g_pRGBframeData;
     void *g_pRaw8Buffer;
     bool thread_running;

@@ -15,23 +15,35 @@ bool ArmorFinder::locateArmorBox(const cv::Mat &src, const ArmorInfo &target) {
     bigger_rect &= cv::Rect2d(0, 0, 640, 640);
     cv::Mat roi = src(bigger_rect).clone();
 
-    ArmorBox box;
     //搜索灯条
-    if(findAccurateArmorBox(roi,box)){
-        target_box = box;
-        target_box.rect.x += bigger_rect.x;  //　添加roi偏移量
-        target_box.rect.y += bigger_rect.y;
-        for (auto &blob : target_box.light_blobs) {
-            blob.rect.center.x += bigger_rect.x;
-            blob.rect.center.y += bigger_rect.y;
+    LightBlobs tmp_blobs;
+    if(findLightBlobs(roi,tmp_blobs)){
+        if (config->show_light_blobs && state==SEARCHING_STATE) {
+            showLightBlobs(runtime->config->configPath+":light_blobs", src, tmp_blobs);
         }
-        target_box.id = target.id;
-    }
-    else{
         target_box.box_color = name2color[id2name[target.id]];
         target_box.id = target.id;
         target_box.rect = target.bbox;
         target_box.light_blobs.clear();
     }
+    else{
+        target_box = ArmorBox();
+    }
+    // if(findAccurateArmorBox(roi,box)){
+    //     target_box = box;
+    //     target_box.rect.x += bigger_rect.x;  //　添加roi偏移量
+    //     target_box.rect.y += bigger_rect.y;
+    //     for (auto &blob : target_box.light_blobs) {
+    //         blob.rect.center.x += bigger_rect.x;
+    //         blob.rect.center.y += bigger_rect.y;
+    //     }
+    //     target_box.id = target.id;
+    // }
+    // else{
+    //     target_box.box_color = name2color[id2name[target.id]];
+    //     target_box.id = target.id;
+    //     target_box.rect = target.bbox;
+    //     target_box.light_blobs.clear();
+    // }
     return true;
 }

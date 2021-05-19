@@ -92,19 +92,19 @@ void GX_STDC OnFrameCallbackFun(GX_FRAME_CALLBACK_PARAM *pFrame) {
         ProcessData((void *)pFrame->pImgBuf, cam->g_pRaw8Buffer,
                     cam->g_pRGBframeData, pFrame->nWidth, pFrame->nHeight,
                     pFrame->nPixelFormat, cam->g_nColorFilter);
-        cv::Mat temp(cam->camConfig.roi_height, cam->camConfig.roi_width,
-                     CV_8UC3);
+        // cv::Mat temp(cam->camConfig.roi_height, cam->camConfig.roi_width,
+        //              CV_8UC3);
 
-        memcpy(temp.data, cam->g_pRGBframeData, 3 * (cam->nPayLoadSize));
-
-        cv::resize(temp, temp, cv::Size(640, 640));
-        std::vector<cv::Mat> channels;
-        split(temp, channels);
+        memcpy(cam->p_full.data, cam->g_pRGBframeData, 3 * (cam->nPayLoadSize));
+        
+        // std::vector<cv::Mat> channels;
+        // split(temp, channels);
         // std::swap(channels[0], channels[2]);
-        cv::swap(channels[0], channels[2]);
-        merge(channels, temp);
+        // cv::swap(channels[0], channels[2]);
+        // merge(channels, temp);
         cam->mtx.lock();
-        temp.copyTo(cam->p_img);
+        cv::resize(cam->p_full, cam->p_img, cv::Size(640, 640), cv::INTER_NEAREST);
+        cv::cvtColor(cam->p_img,cam->p_img, cv::COLOR_RGB2BGR);
         cam->mtx.unlock();
     }
     return;
@@ -147,6 +147,7 @@ Camera::Camera(std::string sn, CameraConfig config)
       camConfig(config),
       init_success(false) {
     p_img = cv::Mat(640, 640, CV_8UC3);
+    p_full = cv::Mat(config.roi_width,config.roi_height,CV_8UC3);
 };
 
 Camera::~Camera() {
