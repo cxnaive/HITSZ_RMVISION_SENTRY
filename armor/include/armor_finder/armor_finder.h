@@ -52,6 +52,7 @@ class ArmorFinder {
     int contour_area;  // 装甲区域亮点个数，用于数字识别未启用时判断是否跟丢（已弃用）
     int tracking_cnt;  // 记录追踪帧数，用于定时退出追踪
     int fps_cnt; //记录帧数
+    double last_time; //记录帧数时间
     RmSerial* serial;  // 串口对象，引用外部变量，用于和能量机关共享同一个变量
     RmConfig* config;
     RmRunTime* runtime;

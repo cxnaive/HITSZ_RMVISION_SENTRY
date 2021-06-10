@@ -63,6 +63,7 @@ ArmorFinder::ArmorFinder(RmRunTime *_runtime, RmSerial *_serial)
           0),  //装甲区域亮点个数，用于数字识别未启用时判断是否跟丢（已弃用）
       tracking_cnt(0),
       fps_cnt(0),
+      last_time(0),
       last_dpitch(0) {  // 记录追踪帧数，用于定时退出追踪
 }
 std::vector<ArmorInfo> ArmorFinder::filterArmorInfoByColor(

@@ -2,7 +2,8 @@
 
 PROJECT(HITSZ-RM-CV)
 SET(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -D_MWAITXINTRIN_H_INCLUDED -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+add_compile_options(-O3)
 set(use_u2_camera false)
 
 
