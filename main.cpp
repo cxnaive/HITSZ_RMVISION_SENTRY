@@ -83,7 +83,7 @@ void Run(RmRunTime* runtime, ArmorFinder* armor_finder) {
             runtime->status_ok = false;
             return;
         }
-        cv::resize(runtime->src, runtime->src, cv::Size(640, 360));
+        cv::resize(runtime->src, runtime->src, cv::Size(640, 640));
     } else {
         runtime->cam->read(runtime->src);
         // config.camConfig.undistort(src);

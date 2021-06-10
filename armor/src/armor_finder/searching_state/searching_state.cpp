@@ -37,11 +37,11 @@ bool ArmorFinder::stateSearchingTarget(cv::Mat& src) {
 
     //寻找灯条信息，精确定位装甲版
     locateArmorBox(src, target);
-    //判断当前目标和上次有效目标是否为同一个目标,并给３帧的时间，试图找到相同目标。即刚发生目标切换内的３帧内不发送目标位置。可以一定程度避免频繁多目标切换。
+    //判断当前目标和上次有效目标是否为同一个目标,并给0帧的时间，试图找到相同目标。即刚发生目标切换内的３帧内不发送目标位置。可以一定程度避免频繁多目标切换。
     if (last_box.rect != cv::Rect2d() &&
         (getPointLength(last_box.getCenter() - target_box.getCenter()) >
          last_box.rect.height * 2.0) &&
-        anti_switch_cnt++ < 3) {
+        anti_switch_cnt++ < 0) {
                 target_box = ArmorBox();
         LOG(INFO) << "avoid_quick_switch!";
         return false;

@@ -27,6 +27,7 @@ void saveVideos(cv::Mat& img, std::string prefix) {
 
 RmRunTime::RmRunTime(std::string configPath) {
     config = new RmConfig(configPath);
+    src = cv::Mat(640,640,CV_8UC3);
     if (config->use_video) {
         video = new VideoWrapper(config->video_path);
         video->init();

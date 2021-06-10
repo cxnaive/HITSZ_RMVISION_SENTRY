@@ -5,11 +5,10 @@
 
 #include "glog/logging.h"
 
-ArmorDetector::ArmorDetector(std::string engine_str) {
-    std::string prefix = engine_str.find("up") != std::string::npos ? "up":"down";
+ArmorDetector::ArmorDetector() {
     classesFile = "rmcv.names";
-    onnx_file = prefix+"_mbv3.onnx";
-    trt_file = prefix+"_mbv3.engine";
+    onnx_file = "mbv3.onnx";
+    trt_file = "mbv3.engine";
     confThreshold = 0.3;
     nmsThreshold = 0.1;
     inpHeight = 640;
