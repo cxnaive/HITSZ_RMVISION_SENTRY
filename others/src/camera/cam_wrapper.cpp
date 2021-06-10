@@ -147,7 +147,8 @@ Camera::Camera(std::string sn, CameraConfig config)
       camConfig(config),
       init_success(false) {
     p_img = cv::Mat(640, 640, CV_8UC3);
-    p_full = cv::Mat(config.roi_width,config.roi_height,CV_8UC3);
+    p_full = cv::Mat(config.roi_height,config.roi_width,CV_8UC3);
+    LOG(INFO) << "ROI: " << config.roi_width << "x" << config.roi_height;
 };
 
 Camera::~Camera() {
