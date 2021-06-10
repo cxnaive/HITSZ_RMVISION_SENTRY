@@ -69,6 +69,8 @@ void update_config() {
 }
 
 static void OnClose() {
+    if (runtime_up != nullptr) runtime_up->config->write_to_file();
+    if (runtime_down != nullptr) runtime_down->config->write_to_file();
     if (runtime_up != nullptr) delete runtime_up;
     if (runtime_down != nullptr) delete runtime_down;
     if (active_port != nullptr) delete active_port;

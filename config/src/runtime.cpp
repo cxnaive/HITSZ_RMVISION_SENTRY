@@ -45,7 +45,7 @@ RmRunTime::RmRunTime(std::string configPath) {
 }
 
 RmRunTime::~RmRunTime() {
-    config->write_to_file();
+    //config->write_to_file();
     if (cam != nullptr) delete cam;
     if (video != nullptr) delete video;
     if (config != nullptr) delete config;

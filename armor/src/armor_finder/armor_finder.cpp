@@ -36,13 +36,13 @@ std::map<std::string, int> name2color = {
     {"B11", ENEMY_BLUE}, {"RE", ENEMY_RED},   {"BE", ENEMY_BLUE}};
 
 std::map<std::string, int> prior_blue = {
-    {"B10", 0}, {"B1", 1}, {"B3", 2}, {"B4", 2}, {"B5", 2}, {"B7", 3},
-    {"B2", 4},  {"BE", 5}, {"R8", 5}, {"R1", 6}, {"R3", 7}, {"R4", 7},
+    {"B1", 1},  {"B3", 2}, {"B4", 2}, {"B5", 2}, {"B7", 3}, {"B2", 4},
+    {"B10", 0}, {"BE", 5}, {"R8", 5}, {"R1", 6}, {"R3", 7}, {"R4", 7},
     {"R5", 7},  {"R7", 8}, {"R2", 9}, {"RE", 10}};
 
 std::map<std::string, int> prior_red = {
-    {"R10", 0}, {"R1", 1}, {"R3", 2}, {"R4", 2}, {"R5", 2}, {"R7", 3},
-    {"R2", 4},  {"RE", 5}, {"B8", 5}, {"B1", 6}, {"B3", 7}, {"B4", 7},
+    {"R1", 1},  {"R3", 2}, {"R4", 2}, {"R5", 2}, {"R7", 3}, {"R2", 4},
+    {"R10", 0}, {"RE", 5}, {"B8", 5}, {"B1", 6}, {"B3", 7}, {"B4", 7},
     {"B5", 7},  {"B7", 8}, {"B2", 9}, {"BE", 10}};
 
 ArmorFinder::ArmorFinder(RmRunTime *_runtime, RmSerial *_serial)
@@ -72,7 +72,8 @@ std::vector<ArmorInfo> ArmorFinder::filterArmorInfoByColor(
     }
     std::vector<ArmorInfo> res;
     for (auto it : armors) {
-        if (name2color[id2name[it.id]] == enemy_color && runtime->config->ignore_types.count(id2name[it.id]) == 0) {
+        if (name2color[id2name[it.id]] == enemy_color &&
+            runtime->config->ignore_types.count(id2name[it.id]) == 0) {
             res.push_back(it);
         }
     }

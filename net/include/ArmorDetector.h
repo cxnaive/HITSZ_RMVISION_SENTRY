@@ -9,7 +9,7 @@
 #include <glog/logging.h>
 
 #define NMS_THRESH 0.2
-#define CONF_THRESH 0.5
+#define CONF_THRESH 0.4
 #define BATCH_SIZE 1
 #define DEVICE 0
 #define ENGINE_NAME "yolov5s.engine"
