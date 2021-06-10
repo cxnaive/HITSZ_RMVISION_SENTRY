@@ -32,7 +32,7 @@ class ArmorDetector {
     std::vector<float> output;
     std::vector<ArmorInfo> PostProcess(const cv::Mat& frame, std::vector<float>& output);
    public:
-    ArmorDetector();
+    ArmorDetector(std::string engine_str);
     ~ArmorDetector();
     double total_time = 0;
     double total_cnt = 0;

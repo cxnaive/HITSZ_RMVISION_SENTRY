@@ -52,7 +52,7 @@ ArmorFinder::ArmorFinder(RmRunTime *_runtime, RmSerial *_serial)
       enemy_color(_runtime->config->ENEMY_COLOR),
       is_anti_top(_runtime->config->ANTI_TOP),  //反陀螺
       state(SEARCHING_STATE),                   //默认为searching模式
-      netDetector(),                            // YOLOV5 多目标识别
+      netDetector(_runtime->config->configPath),                            // YOLOV5 多目标识别
       anti_switch_cnt(0),                       // 防止乱切目标计数器
       YawPID(_runtime->config->ARMOR_YAW_KP, _runtime->config->ARMOR_YAW_KI,
              _runtime->config->ARMOR_YAW_KD),  // YAW轴PID控制
