@@ -82,14 +82,14 @@ bool ArmorFinder::sendBoxPosition(uint16_t shoot_delay) {
     //LOG(INFO) << "error:" << error;
     if (error < config->SHOT_THRESHOLD) {
         return sendTarget(serial, yaw, -pitch,
-                          runtime->config->SERIAL_OFFSET + 2, shoot_delay);
+                          dist,runtime->config->SERIAL_OFFSET + 2);
     } else
         return sendTarget(serial, yaw, -pitch,
-                          runtime->config->SERIAL_OFFSET + 1, shoot_delay);
+                          dist,runtime->config->SERIAL_OFFSET + 1);
 }
 
 bool ArmorFinder::sendLostBox() {
     PitchPID.clear();
     YawPID.clear();
-    return sendTarget(serial, 0, 0, runtime->config->SERIAL_OFFSET, 0);
+    return sendTarget(serial, 0, 0, 0, runtime->config->SERIAL_OFFSET);
 }
