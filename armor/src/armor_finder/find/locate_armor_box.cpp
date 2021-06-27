@@ -17,7 +17,7 @@ bool ArmorFinder::locateArmorBox(const cv::Mat &src, const ArmorInfo &target) {
 
     //搜索灯条
     LightBlobs tmp_blobs;
-    if(!roi.empty() && findLightBlobs(roi,tmp_blobs)){
+    if(!roi.empty() && (!config->strict_mode || findLightBlobs(roi,tmp_blobs))){
         if (config->show_light_blobs && state==SEARCHING_STATE) {
             showLightBlobs(runtime->config->configPath+":light_blobs", src, tmp_blobs);
         }

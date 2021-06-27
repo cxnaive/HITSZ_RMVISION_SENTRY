@@ -49,6 +49,7 @@ RmConfig::RmConfig(std::string _configPath) {
     uart_port = config["uart_port"].asString();
     video_path = config["video_path"].asString();
     camera_sn = config["camera_sn"].asString();
+    strict_mode = config["strict_mode"].asBool();
     has_show = show_origin || show_armor_box || show_light_box ||
                show_light_blobs || (show_pnp_axies && use_pnp) || show_energy ||
                show_energy_extra || show_process || show_net_box;
@@ -128,6 +129,7 @@ void RmConfig::write_to_file() {
     config["uart_port"] = uart_port;
     config["video_path"] = video_path;
     config["camera_sn"] = camera_sn;
+    config["strict_mode"] = strict_mode;
     for (auto &item : ignore_types) {
         config["ignore_types"].append(item);
     }

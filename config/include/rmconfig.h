@@ -46,6 +46,7 @@ public:
     bool show_pnp_axies = false;
     bool log_send_target = false;
     bool use_video = false;
+    bool strict_mode = false;
     std::string video_path = "video.mp4";
     std::string camera_sn = "NULL";
     std::set<std::string> ignore_types = {"RE","BE"};
